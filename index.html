@@ -41,6 +41,18 @@
         });
     }
 
+    function displayMinPrice(itemId, method) {
+        getItemPrice(itemId, method).then(prices => {
+            const elementId = 'min-price-' + itemId;
+            if (prices.length > 0 && !isNaN(prices[0])) {
+                const minPrice = Math.min(...prices);
+                document.getElementById(elementId).textContent = "最低卖价: " + minPrice; // 将最大价格插入到 HTML 元素中
+            } else {
+                document.getElementById(elementId).textContent = "未获取到有效价格"; // 处理未获取到有效价格的情况
+            }
+        });
+    }
+
     async function fetchWithRetry(url, maxRetries, retryDelay) {
         for (let i = 0; i <= maxRetries; i++) {
             try {
@@ -182,7 +194,7 @@
 
             // Create h1 element
             const h1 = document.createElement('h1');
-            h1.innerHTML = `${name}: <span id="max-price-${itemId}">最高买价: </span>`;
+            h1.innerHTML = `${name} - <span id="max-price-${itemId}">最高买价: </span> - <span id="min-price-${itemId}">最低卖价: </span>`;
             container.appendChild(h1);
 
             // Create price chart canvas
@@ -214,11 +226,13 @@
         {itemId: 38, name: '超新星诺克石'},
         {itemId: 36, name: '类银超金属'},
         {itemId: 40, name: '超噬矿'},
-        {itemId: 37, name: '同位聚合体'}
+        {itemId: 37, name: '同位聚合体'},
+        {itemId: 35, name: '类晶体胶矿'}
     ];
     generateMineralElements(minerals);
     minerals.forEach(mineral => {
         displayMaxPrice(mineral.itemId, 'buy');
+        displayMinPrice(mineral.itemId, 'sell');
         createCharts(mineral.itemId, mineral.name);
     });
 
