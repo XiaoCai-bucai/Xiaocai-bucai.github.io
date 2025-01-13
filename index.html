@@ -6,31 +6,7 @@
     <title>矿物</title>
 </head>
 <body>
-
-<h1>晶状石英核岩</h1>
-<p id="max-price-39">最高买价: </p> <!-- 添加一个元素来显示最大价格 -->
-<canvas id="priceChart-39" style="height: 250px; width: 800px;"></canvas>
-<canvas id="quantityChart-39" style="height: 200px; width: 800px;"></canvas>
-<h1>三钛合金</h1>
-<p id="max-price-34">最高买价: </p> <!-- 添加一个元素来显示最大价格 -->
-<canvas id="priceChart-34" style="height: 250px; width: 800px;"></canvas>
-<canvas id="quantityChart-34" style="height: 200px; width: 800px;"></canvas>
-<h1>超新星诺克石</h1>
-<p id="max-price-38">最高买价: </p> <!-- 添加一个元素来显示最大价格 -->
-<canvas id="priceChart-38" style="height: 250px; width: 800px;"></canvas>
-<canvas id="quantityChart-38" style="height: 200px; width: 800px;"></canvas>
-<h1>类银超金属</h1>
-<p id="max-price-36">最高买价: </p> <!-- 添加一个元素来显示最大价格 -->
-<canvas id="priceChart-36" style="height: 250px; width: 800px;"></canvas>
-<canvas id="quantityChart-36" style="height: 200px; width: 800px;"></canvas>
-<h1>超噬矿</h1>
-<p id="max-price-40">最高买价: </p> <!-- 添加一个元素来显示最大价格 -->
-<canvas id="priceChart-40" style="height: 250px; width: 800px;"></canvas>
-<canvas id="quantityChart-40" style="height: 200px; width: 800px;"></canvas>
-<h1>同位聚合体</h1>
-<p id="max-price-37">最高买价: </p> <!-- 添加一个元素来显示最大价格 -->
-<canvas id="priceChart-37" style="height: 250px; width: 800px;"></canvas>
-<canvas id="quantityChart-37" style="height: 200px; width: 800px;"></canvas>
+<div id="minerals-container"></div>
 </body>
 </html>
 <script>
@@ -126,16 +102,15 @@
     // Function to create charts for a given itemId and name
     function createCharts(itemId, name) {
         fetchhistory(itemId).then(data => {
-            console.log(data)
             // Extract price and quantity data
-            var highPrices = data.map(row => row.highest);
-            var lowPrices = data.map(row => row.lowest);
+            var highPrices = data.map(row => row[1]);
+            var lowPrices = data.map(row => row[2]);
 
             // Chart configuration for price
             var priceConfig = {
                 type: 'line',
                 data: {
-                    labels: data.map(row => row.date),
+                    labels: data.map(row => row[0]),
                     datasets: [
                         {
                             label: '最高价格',
@@ -190,7 +165,6 @@
                 }
             };
 
-            console.log(highPrices, lowPrices, priceConfig)
             // Create price chart
             var priceChart = new Chart(
                 document.getElementById('priceChart-' + itemId),
@@ -200,13 +174,52 @@
         });
     }
 
-    createCharts(39, '晶状石英核岩');
+    // Function to generate HTML elements for minerals
+    function generateMineralElements(minerals) {
+        const container = document.getElementById('minerals-container');
+        minerals.forEach(mineral => {
+            const {itemId, name} = mineral;
 
-    // 示例调用
-    // displayMaxPrice(39, 'buy');
-    // displayMaxPrice(34, 'buy');
-    // displayMaxPrice(38, 'buy');
-    // displayMaxPrice(36, 'buy');
-    // displayMaxPrice(40, 'buy');
-    // displayMaxPrice(37, 'buy');
+            // Create h1 element
+            const h1 = document.createElement('h1');
+            h1.innerHTML = `${name}: <span id="max-price-${itemId}">最高买价: </span>`;
+            container.appendChild(h1);
+
+            // Create price chart canvas
+            const priceCanvas = document.createElement('canvas');
+            priceCanvas.id = `priceChart-${itemId}`;
+            priceCanvas.width = 800;
+            priceCanvas.height = 250;
+            container.appendChild(priceCanvas);
+
+            // // Create quantity chart canvas
+            // const quantityCanvas = document.createElement('canvas');
+            // quantityCanvas.id = `quantityChart-${itemId}`;
+            // quantityCanvas.width = 400;
+            // quantityCanvas.height = 200;
+            // container.appendChild(quantityCanvas);
+
+            // Add a container for better styling
+            const chartContainer = document.createElement('div');
+            chartContainer.className = 'chart-container';
+            chartContainer.appendChild(priceCanvas);
+            // chartContainer.appendChild(quantityCanvas);
+            container.appendChild(chartContainer);
+        });
+    }
+
+    const minerals = [
+        {itemId: 34, name: '三钛合金'},
+        {itemId: 39, name: '晶状石英核岩'},
+        {itemId: 38, name: '超新星诺克石'},
+        {itemId: 36, name: '类银超金属'},
+        {itemId: 40, name: '超噬矿'},
+        {itemId: 37, name: '同位聚合体'}
+    ];
+    generateMineralElements(minerals);
+    minerals.forEach(mineral => {
+        displayMaxPrice(mineral.itemId, 'buy');
+        createCharts(mineral.itemId, mineral.name);
+    });
+
 </script>
